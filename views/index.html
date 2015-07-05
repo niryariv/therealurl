@@ -1,0 +1,132 @@
+<html>
+  <head>
+    <title>{{ sitename }} : URL Unshortening Web Service With JSON/P Support</title>
+		<meta name="description" content="JSON web service to convert short URLs back to original format" />
+		<meta name="keywords" content="URL, short, shortening, unshorten, long, json, jsonp" />
+    <style>
+      body {
+      	color: #ADACAC;
+      	background: #353535;
+      	text-align: center;
+      	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+      	font-size: 12px;
+
+				margin: 10px auto 30px auto;
+				width: 650px;
+      }
+
+
+			a {	color: #ADACAC;	}
+
+			.text { text-align: left;	}
+			
+			.form {
+				border: 2px solid #666666;
+				font-size: 13px;
+			}
+			
+			pre {
+				background: #292929 none repeat scroll 0 0;
+				color:#FFFFFF;
+				overflow:auto;
+				padding:8px 10px;
+				text-align: center;
+			}
+			
+    </style>
+		<script>
+			function renderResponse(text) {
+				document.getElementById("response").innerHTML = text;
+			}
+			
+			function handler() {
+				if(this.readyState == 4 && this.status == 200) {
+					// resp = eval("(" + this.responseText + ")");
+					// url = resp.url
+					url = this.responseText
+					document.getElementById("response").innerHTML = 
+						"<pre>" + ( url == "error" ? url : '<a href="' + url +'">'+ url +"</a>") + "</pre>";
+			 	}	
+			}
+			
+			function doRequest(url) {
+				if (url.replace(/^\s+|\s+$/g, '') != '') 	{ // JS for url.strip
+					var req = new XMLHttpRequest();
+					req.onreadystatechange = handler;
+					renderResponse("Loading..");
+					req.open("GET", "/?url=" + url);
+					req.send("");
+				}
+			}
+		</script>
+  </head>
+  <body>
+    <p>
+			<h1>{{ sitename }}</h1>
+			<h3><tt>Cleaning up over 800,000 URLs a day.</tt></h3>
+		</p>
+		
+		<p><b><i>Install TheRealURL on your browser:</i><br/>
+			<a style="color: yellow;" href="https://addons.mozilla.org/en-US/firefox/addon/60152">Firefox/Thunderbird add on</a>
+			&nbsp;&nbsp;&nbsp;
+			<a style="color: yellow;" href="https://chrome.google.com/extensions/detail/limjcpdphjbhdldhiahblmfadfaciaok">Chrome URL Expander</a>
+			</b>
+			<br /><br />
+		</p>
+		
+		
+		<p>
+			Enter a shortened URL (eg, <tt>http://tinyurl.com/xyz</tt>) and get the original un-shortened URL:
+				<form action="javascript:doRequest(document.forms[0].url.value);">
+					<input type="text" name="url" size="50" class="form" />
+					<input type="submit" value="Get TheRealURL">
+				</form>
+		</p>
+		<p>
+			<span id="response">&nbsp;</span>
+		</p>
+				
+		<div class="text">
+			<p>
+				<b><i>{{ sitename }} is built to be used as a web service.</i></b> The URL is sent in the <b><tt>url=</tt></b> parameter,
+				if no return format is specified the response is simply the unshortened URL:
+				
+				<pre><a href="/?url=http://tinyurl.com/b">http://therealurl.appspot.com?<b>url=http://tinyurl.com/b</b></a> => http://www.betshop.com</pre>
+				(If the request fails for some reason, TheRealURL responds with "404 Not Found" with the body <tt>error</tt>)
+				
+				<br /><br />
+				Adding <tt>format=json</tt> returns a <b>JSON response</b>. In addition to the unshortened URL, <b>JSON responses also return the page title</b>:
+<pre>
+<a href="/?format=json&url=bit.ly/a">http://therealurl.appspot.com/?<b>format=json</b>&url=bit.ly/a</a>
+					
+=> {"url": "http:\/\/www.apple.com\/", "title": "Apple"}
+</pre>
+				<br />
+				Adding a <tt>callback=</tt> parameter allows for <b>cross site requests</b> with <b><a href="http://en.wikipedia.org/wiki/JSON#JSONP">JSONP</a></b>.
+				This jQuery (v >= 1.2) code remotely fetches an unshortened URL:
+		
+<pre style="text-align: left;">
+$.getJSON("http://therealurl.appspot.com?format=json&url=bit.ly/q&callback=?", 
+	function(data){ alert(data.url) }
+);</pre>
+				
+				<br />
+				<b>Free usage of TheRealURL is limited to {{ ratelimit }} requests per IP per day.</b>
+				If you'd like a higher request quota - or for any feedback, questions etc - contact me at niryariv@gmail.com or 
+				<a href="http://niryariv.wordpress.com/2009/04/20/the-real-url/">leave a comment</a>.
+			</p>
+			<br /><br />
+			<p style="text-align:right;"><a href="http://niryariv.wordpress.com/">Nir Yariv</a>, Apr 2009</p>
+		</div>
+		<script type="text/javascript">
+			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+			</script>
+			<script type="text/javascript">
+			try {
+			var pageTracker = _gat._getTracker("UA-991158-4");
+			pageTracker._trackPageview();
+			} catch(err) {}
+		</script>
+  </body>
+</html>
